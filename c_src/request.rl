@@ -419,7 +419,7 @@ void
 destroy_request(request_t* req)
 {
     if(req == NULL) return;
-    
+   
     Py_XDECREF(req->method);
     Py_XDECREF(req->uri);
     Py_XDECREF(req->scheme);
@@ -464,7 +464,7 @@ parse_request(PyObject* ignored, PyObject* args)
 {
     PyObject* self;
     PyObject* source;
-    PyObject* port;
+    PyObject* port = NULL;
     PyObject* ret = NULL;
     int status;
 
@@ -480,7 +480,7 @@ parse_request(PyObject* ignored, PyObject* args)
         destroy_request(req);
         Py_RETURN_NONE;
     }
-
+    
     // Move objects to self
 
     if(move_object(self, "method", &(req->method)) != 0) goto done;

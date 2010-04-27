@@ -6,7 +6,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from errors import InvalidChunkSizeError
+from errors import *
 
 class ChunkedReader(object):
     def __init__(self, req, unreader):
@@ -65,14 +65,14 @@ class ChunkedReader(object):
                 yield rest
                 rest = unreader.read()
                 if not rest:
-                    raise NoMoreDataError()
+                    raise NoMoreData()
             yield rest[:size]
             # Remove \r\n after chunk
             rest = rest[size:]
             while len(rest) < 2:
                 rest += unreader.read()
             if rest[:2] != '\r\n':
-                raise ChunkMissingTerminatorError(rest[:2])
+                raise ChunkMissingTerminator(rest[:2])
             (size, rest) = self.parse_chunk_size(unreader, data=rest[2:])          
 
     def parse_chunk_size(self, unreader, data=None):
@@ -92,7 +92,7 @@ class ChunkedReader(object):
         try:
             chunk_size = int(chunk_size, 16)
         except ValueError:
-            raise InvalidChunkSizeError(chunk_size)
+            raise InvalidChunkSize(chunk_size)
 
         if chunk_size == 0:
             self.parse_trailers(unreader, rest_chunk)
@@ -102,7 +102,7 @@ class ChunkedReader(object):
     def get_data(self, unreader, buf):
         data = unreader.read()
         if not data:
-            raise NoMoreDataError()
+            raise NoMoreData()
         buf.write(data)
 
 class LengthReader(object):

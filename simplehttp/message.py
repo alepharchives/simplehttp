@@ -17,7 +17,7 @@ except ImportError:
     c_parse_request = None
 
 from body import ChunkedReader, LengthReader, EOFReader, Body
-from errors import NoMoreDataError, InvalidRequestLine, InvalidHeaderError
+from errors import *
 
 class Message(object):
     def __init__(self, unreader):
@@ -51,8 +51,9 @@ class Message(object):
             # Parse initial header name : value pair.
             curr = lines.pop(0)
             if curr.find(":") < 0:
-                raise InvalidHeaderError(curr.strip())
+                raise InvalidHeader(curr.strip())
             name, value = curr.split(":", 1)
+            name = name.rstrip(" \t")
             if self.hdrre.search(name):
                 raise InvalidHeaderName(name)
             name, value = name.strip(), [value.lstrip()]
@@ -97,7 +98,7 @@ class Message(object):
 
 class Request(Message):
     def __init__(self, unreader):
-        self.methre = re.compile("[a-zA-Z]{3,20}")
+        self.methre = re.compile("[A-Z0-9$-_.]{3,20}")
         self.versre = re.compile("HTTP/(\d+).(\d+)")
     
         self.method = None
@@ -117,7 +118,7 @@ class Request(Message):
         if not data:
             if stop:
                 raise StopIteration()
-            raise NoMoreDataError(buf.getvalue())
+            raise NoMoreData(buf.getvalue())
         buf.write(data)
     
     def parse(self, unreader):
@@ -200,5 +201,5 @@ class Response(Message):
         super(Response, self).__init__(unreader)
     
     def parse(self):
-        raise NotImplementedError()
+        raise NotImplemented()
 
