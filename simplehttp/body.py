@@ -191,8 +191,7 @@ class Body(object):
         else:
             size = None
                     
-        data = self.reader.read(size=size)
-        ret = self.buf.getvalue() + data
+        ret = self.buf.getvalue() + self.reader.read(size=size)
         self.buf.truncate(0)
         return ret
     
