@@ -178,20 +178,21 @@ class Body(object):
     def read(self, size=None):
         if size is not None and not isinstance(size, (int, long)):
             raise TypeError("size must be an integral type")
-
+            
         if size is not None and size < self.buf.tell():
             data = self.buf.getvalue()
             ret, rest = data[:size], data[size:]
             self.buf.truncate(0)
             self.buf.write(rest)
             return ret
-
+            
         if size > 0:
             size -= self.buf.tell()
         else:
             size = None
-        
-        ret = self.buf.getvalue() + self.reader.read(size=size)
+                    
+        data = self.reader.read(size=size)
+        ret = self.buf.getvalue() + data
         self.buf.truncate(0)
         return ret
     
