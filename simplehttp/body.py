@@ -123,7 +123,7 @@ class LengthReader(object):
         data = self.unreader.read()
         while data:
             buf.write(data)
-            if buf.tell() > size:
+            if buf.tell() >= size:
                 break
             data = self.unreader.read()
         
