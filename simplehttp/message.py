@@ -92,7 +92,7 @@ class Message(object):
                 if v.lower().strip() == "close":
                     return True
                 elif v.lower().strip() == "keep-alive":
-                    return True
+                    return False
         return self.version <= (1, 0)
 
 

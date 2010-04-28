@@ -11,15 +11,24 @@ class Parser(object):
             self.unreader = SocketUnreader(source)
         else:
             self.unreader = IterUnreader(source)
-    
+        self.mesg = None
+
     def __iter__(self):
         return self
     
     def next(self):
+        self._discard()
         ret = self.mesg_class(self.unreader)
         if not ret:
             raise StopIteration()
         return ret
+
+    def _discard(self):
+        if self.mesg is not None:
+            data = self.mesg.read(8192)
+            while data:
+                self.mesg.read(8192)
+        self.mesg = None
 
 class RequestParser(Parser):
     def __init__(self, *args, **kwargs):
